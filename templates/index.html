@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iSpindel Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            font-size: 1rem;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        td {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>iSpindel Dashboard</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>ID</th>
+                <th>Batteri</th>
+                <th>Temperatur</th>
+                <th>Vinkel</th>
+                <th>Gravity</th>
+            </tr>
+        </thead>
+        <tbody id="data-table">
+        </tbody>
+    </table>
+
+    <script>
+        const socket = io('http://localhost:5001');  // Bruk riktig port for Socket.IO-tilkobling
+
+        // Lytt til oppdateringer fra serveren via WebSocket
+        socket.on('update_data', function (data) {
+            console.log('Data mottatt fra server:', data);  // Logg dataene til konsollen
+
+            const tableBody = document.getElementById('data-table');
+            tableBody.innerHTML = '';  // Tøm tabellen før den oppdateres
+
+            // Oppdater tabellen med de nye dataene
+            for (const id in data) {
+                const rowData = data[id];
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${rowData.name || 'Ukjent'}</td>
+                    <td>${rowData.ID || 'Ukjent'}</td>
+                    <td>${rowData.battery || 'Ukjent'}</td>
+                    <td>${rowData.temperature || 'Ukjent'}</td>
+                    <td>${rowData.angle || 'Ukjent'}</td>
+                    <td>${rowData.gravity || 'Ukjent'}</td>
+                `;
+                tableBody.appendChild(tr);
+            }
+        });
+    </script>
+</body>
+</html>
